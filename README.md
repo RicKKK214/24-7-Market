@@ -227,6 +227,12 @@ derived from order listings that can change or disappear before a trade executes
 
 ## Deploying to Render (free tier)
 
+> **Step-by-step instructions with exact commands: see [DEPLOY.md](./DEPLOY.md).**
+>
+> **On "24/7":** free Render services spin down after 15 minutes idle and take ~30-60s to wake.
+> The URL always works, but it is not continuously running unless you keep it pinged - and the
+> 750 free instance hours/month only cover ONE always-on service per workspace. See DEPLOY.md.
+
 This repo ships a `render.yaml` blueprint. In Render: **New → Blueprint**, point it at the repo,
 and deploy. Or create a Web Service manually with:
 
