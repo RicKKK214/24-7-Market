@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Item {
+  id            String   @id
+  slug          String   @unique
+  name          String
+  tags          String
+  isSetRoot     Boolean  @default(false)
+  tradable      Boolean  @default(true)
+  ducats        Int?
+  thumb         String?
+  category      String   @default("other")
+  updatedAt     DateTime @updatedAt
+  partsOfSet    SetComposition[] @relation("SetRoot")
+  memberOfSets  SetComposition[] @relation("PartItem")
+}
+
+model SetComposition {
+  id           String @id @default(cuid())
+  setSlug      String
+  partSlug     String
+  quantity     Int    @default(1)
+  set          Item   @relation("SetRoot", fields: [setSlug], references: [slug], onDelete: Cascade)
+  part         Item   @relation("PartItem", fields: [partSlug], references: [slug], onDelete: Cascade)
+  updatedAt    DateTime @updatedAt
+  @@unique([setSlug, partSlug])
+}
+
+model MarketSnapshot {
+  id            String   @id @default(cuid())
+  setSlug       String
+  createdAt     DateTime @default(now())
+  setBuyPrice   Float?
+  setSellPrice  Float?
+  partsCost     Float?
+  partsValue    Float?
+  spread        Float?
+  bestProfit    Float?
+  bestRoi       Float?
+  bestStrategy  String?
+  confidence    Int?
+  @@index([setSlug, createdAt])
+}
+
+model Opportunity {
+  id            String   @id @default(cuid())
+  setSlug       String
+  setName       String
+  category      String
+  strategy      String
+  investment    Float
+  instantRevenue Float
+  instantProfit Float
+  instantRoi    Float
+  listingRevenue Float
+  listingProfit Float
+  listingRoi    Float
+  sellers       Int
+  buyers        Int
+  confidence    Int
+  partCount     Int
+  updatedAt     DateTime @default(now())
+  @@unique([setSlug, strategy])
+}
+
+model Watchlist {
+  id            String   @id @default(cuid())
+  setSlug       String   @unique
+  setName       String
+  strategy      String?
+  lastProfit    Float?
+  prevProfit    Float?
+  lastRoi       Float?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model AppSettings {
+  id                String  @id @default("default")
+  platform          String  @default("pc")
+  crossplay         Boolean @default(true)
+  language          String  @default("en")
+  pricingMode       String  @default("median3")
+  refreshSeconds    Int     @default(120)
+  onlineOnly        Boolean @default(true)
+  updatedAt         DateTime @updatedAt
+}
